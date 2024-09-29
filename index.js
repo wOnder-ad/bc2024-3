@@ -1,7 +1,7 @@
 const {program} = require('commander');
 const fs = require('fs');
 
-progrem
+program
 .requiredOption('-i, --input <path>', 'шлях до файлу для читання (json з даними сервера НБУ)')
 .option('-o, --output <path>', 'шлях до файлу для запису результату')
 .option('-d, --display', 'вивести результат у консоль');
@@ -22,10 +22,13 @@ if (!fs.existsSync(ortions.input)){
 
 let data;
 try{
-    const rawData = fs.readFileSync(option.input, 'utf8');
+    const rawData = fs.readFileSync(options.input, 'utf8');
+    console.log('Raw Date:', rawData);
     data = JSON.parse(rawDate);
+    console.log('Parsed Date:', data);
 } catch (err){
     console.error('Error reading or parsing input file');
+    console.error(err);
     process.exit(1);
 }
 
