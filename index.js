@@ -22,13 +22,28 @@ if (!fs.existsSync(ortions.input)){
 
 let data;
 try{
-    dafa = fs.readFileSync(options.input, 'utf8');
+    const rawData = fs.readFileSync(option.input, 'utf8');
+    data = JSON.parse(rawDate);
 } catch (err){
-    console.error('Error reading input file');
+    console.error('Error reading or parsing input file');
     process.exit(1);
 }
 
-let result = data;
+let resultLines = [];
+
+if(Array.isArray(data)){
+    data.forEach(entry => {
+        if (entry.exchangedate && entry.rate){
+            resultLines.push('${entry.exchangedate}:${entry.rate}');
+            process.exit(1);
+        }
+    });
+}else{
+    console.error('Unexpected JSON structure');
+    process.exit(1);
+}
+
+let result = resultLines.join('\n');
 
 const writeResult = () => {
     if (options.output){
