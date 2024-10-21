@@ -20,17 +20,38 @@ if (!fs.existsSync(options.input)) {
   process.exit(1);
 }
 
-const data = fs.readFileSync(options.input, 'utf8');
+let data;
+try {
+  data = fs.readFileSync(options.input, 'utf8');
+} catch (err) {
+  console.error('Error reading the input file:', err.message);
+  process.exit(1);
+}
+
+let jsonData;
+try {
+  jsonData = JSON.parse(data);
+} catch (err) {
+  console.error('Invalid JSON format in input file:', err.message);
+  process.exit(1);
+}
 
 if (!options.output && !options.display) {
   process.exit(0);  
 }
 
 if (options.display) {
-  console.log('Data:', data);
+  console.log('Data:', jsonData);
 }
 
 if (options.output) {
-  fs.writeFileSync(options.output, data);
-  console.log('Data written to:', options.output);
+  try {
+    fs.writeFileSync(options.output, JSON.stringify(jsonData, null, 2), 'utf8');
+    console.log('Data written to:', options.output);
+  } catch (err) {
+    console.error('Error writing to the output file:', err.message);
+    process.exit(1);
+  }
 }
+
+process.exit(0);
