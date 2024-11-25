@@ -36,17 +36,40 @@ try {
   process.exit(1);
 }
 
+function extractCurrencyRates(data) {
+  const results = [];
+  for (const entry of data) {
+    const date = entry.exchangedate || 'Unknown Date'; // Перевірка, чи є поле exchangedate
+    const rate = entry.rate || 'Unknown Rate';        // Перевірка, чи є поле rate
+    results.push(`${date}:${rate}`);
+  }
+  return results;
+}
+
+let outputData;
+try {
+  if (Array.isArray(jsonData)) {
+    outputData = extractCurrencyRates(jsonData);
+  } else {
+    console.error('JSON is not in expected format (array of objects).');
+    process.exit(1);
+  }
+} catch (err) {
+  console.error('Error processing the data:', err.message);
+  process.exit(1);
+}
+
 if (!options.output && !options.display) {
   process.exit(0);  
 }
 
 if (options.display) {
-  console.log('Data:', jsonData);
+  console.log(outputData.join('\n'));
 }
 
 if (options.output) {
   try {
-    fs.writeFileSync(options.output, JSON.stringify(jsonData, null, 2), 'utf8');
+    fs.writeFileSync(options.output, outputData.join('\n'), 'utf8');
     console.log('Data written to:', options.output);
   } catch (err) {
     console.error('Error writing to the output file:', err.message);
